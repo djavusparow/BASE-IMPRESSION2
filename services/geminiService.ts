@@ -2,10 +2,9 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { UserVibe } from "../types";
 
-const API_KEY = process.env.API_KEY || '';
-
 export const analyzeVibe = async (handle: string, bio: string): Promise<UserVibe> => {
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  // Always initialize inside the function to use the latest API_KEY
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
@@ -29,11 +28,13 @@ export const analyzeVibe = async (handle: string, bio: string): Promise<UserVibe
     }
   });
 
-  return JSON.parse(response.text);
+  const text = response.text;
+  if (!text) throw new Error("No response from AI");
+  return JSON.parse(text);
 };
 
 export const generateImpressionImage = async (prompt: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash-image',
@@ -52,10 +53,13 @@ export const generateImpressionImage = async (prompt: string): Promise<string> =
   });
 
   let imageUrl = '';
-  for (const part of response.candidates[0].content.parts) {
-    if (part.inlineData) {
-      imageUrl = `data:image/png;base64,${part.inlineData.data}`;
-      break;
+  // The response might contain both image and text parts; iterate through all parts to find the image part.
+  if (response.candidates && response.candidates[0].content.parts) {
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData) {
+        imageUrl = `data:image/png;base64,${part.inlineData.data}`;
+        break;
+      }
     }
   }
 

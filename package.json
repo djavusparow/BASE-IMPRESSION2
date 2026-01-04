@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "mkdir -p build && cp index.html index.tsx types.ts metadata.json vercel.json build/ && cp -r services components build/ 2>/dev/null || true",
+    "build": "mkdir -p build && cp index.html index.tsx App.tsx types.ts metadata.json vercel.json build/ && cp -rv services components build/ 2>/dev/null || true",
     "start": "serve build"
   },
   "dependencies": {
