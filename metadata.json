@@ -1,0 +1,7 @@
+{
+  "name": "Base Impression",
+  "description": "A Farcaster mini-app that generates AI-powered visual impressions of your social presence on the Base network.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
